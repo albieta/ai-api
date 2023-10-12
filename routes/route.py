@@ -61,53 +61,15 @@ def create_rest_from_model(model: BaseModel, collection_name: str):
     item_id = '{item_id}'
     
 
-    router_code = f"""from fastapi import APIRouter, HTTPException
-from typing import List, TypeVar
-from pymongo.collection import ReturnDocument
-from config.database import db
-from schema.schemas import list_serial, individual_serial
-from bson import ObjectId
-from models.{collection_name}_model import {model.__name__}
+    router_code = f"""from models.{collection_name}_model import {model.__name__}
+from routes.general.general_routes import CRUDRoutes
 
-dynamic_router = APIRouter(tags=["{model_name}"])
+class {model.__name__}Routes(CRUDRoutes):
 
-def get_collection(collection_name: str = 'default_collection'):
-    return db[collection_name]
-
-# GET Request Method
-@dynamic_router.get('/{model_name_lower}/', response_model=List[dict])
-async def get_items(skip: int = 0, limit: int = 10):
-    collection = get_collection('{collection_name}')
-    items = collection.find(skip=skip, limit=limit)
-    return list_serial(items)
-
-# POST Request Method
-@dynamic_router.post('/{model_name_lower}/', response_model=dict)
-async def create_item(item: {model_name}):
-    collection = get_collection('example')
-    created_result = collection.insert_one(dict(item))
-    created_item = collection.find_one(""" + "{'_id': created_result.inserted_id}" + f""")
-    return individual_serial(created_item)
-
-# PUT Request Method
-@dynamic_router.put('/{model_name_lower}/{item_id}/', response_model=dict)
-async def update_item(item_id: str, item: {model_name}):
-    collection = get_collection('{collection_name}')
-    updated_item = collection.find_one_and_update(""" + "{'_id': ObjectId(item_id)},{'$set': item.dict()}, return_document=ReturnDocument.AFTER,)" + f"""
-    if updated_item:
-        return individual_serial(updated_item)
-    raise HTTPException(status_code=404, detail="Item not found")
-
-# DELETE Request Method
-@dynamic_router.delete('/{model_name_lower}/{item_id}/', response_model=dict)
-async def delete_item(item_id: str):
-    collection = get_collection('{collection_name}')
-    deleted_item = collection.find_one_and_delete(""" + "{'_id': ObjectId(item_id)})" + """
-    if deleted_item:
-        return individual_serial(deleted_item)
-    raise HTTPException(status_code=404, detail="Item not found")
-
+    def __init__(self):
+        super().__init__(model_type={model.__name__}, collection_name='{model_name_lower}')
 """
+    
     file_path = os.path.join(models_folder, f"{model_name_lower}_router.py")
     with open(file_path, "w") as file:
         file.write(router_code)
