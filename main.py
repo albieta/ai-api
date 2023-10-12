@@ -2,10 +2,16 @@ from fastapi import FastAPI
 import os
 import glob
 import importlib
-import inspect
 from pydantic import BaseModel
 
-app = FastAPI()
+tags_metadata = [
+    {
+        "name": "Main",
+        "description": "This router allows to create models from any given JSON Schema format",
+    },
+]
+
+app = FastAPI(openapi_tags=tags_metadata)
 
 routes_directory = "routes"
 models_directory = "models"
