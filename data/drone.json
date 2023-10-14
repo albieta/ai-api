@@ -1,0 +1,1 @@
+{"$schema": "http://json-schema.org/draft-07/schema#", "type": "object", "title": "drone", "properties": {"name": {"type": "string", "description": "Name of the drone"}, "model": {"type": "string", "description": "Model of the drone"}, "id": {"type": "string", "description": "id of the drone"}}, "required": ["name", "model", "id"]}

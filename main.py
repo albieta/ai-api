@@ -3,6 +3,7 @@ import os
 import glob
 import importlib
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 tags_metadata = [
     {
@@ -12,6 +13,14 @@ tags_metadata = [
 ]
 
 app = FastAPI(openapi_tags=tags_metadata)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 routes_directory = "routes"
 models_directory = "models"

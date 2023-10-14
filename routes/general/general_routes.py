@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List, TypeVar, Type
+from pydantic import BaseModel
 from pymongo.collection import ReturnDocument
 from config.database import db
 from schema.schemas import list_serial, individual_serial
